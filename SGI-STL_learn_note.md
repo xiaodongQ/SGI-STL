@@ -2,7 +2,7 @@
  * @Description: 记录该fork学习过程
  * @Author: xd
  * @Date: 2019-10-12 08:24:44
- * @LastEditTime: 2019-10-16 09:39:13
+ * @LastEditTime: 2019-10-17 08:53:13
  * @LastEditors: xd
  * @Note: 
  -->
@@ -30,17 +30,19 @@ github repository website:
 
 ### 顺序容器(序列式容器 sequence container)
 
-* array         静态的连续数组
+* array         静态的连续数组(C++11 起)
 * vector        动态的连续数组
 * deque         双端队列
-* forward_list  单链表
+* forward_list  单链表(C++11 起)
 * list          双链表
 
+---
 * heap (内含一个 vector)
 * priority-queue (内含一个 heap)
 * slist (非标准)
 * stack (内含一个 deque) (adapter 配接器)
 * queue (内含一个 deque) (adapter 配接器)
+---
 
 ### 关联容器
 
@@ -48,3 +50,7 @@ github repository website:
 * map           键值对的集合，按照键排序，键是唯一的 (内含一个 RB-tree)
 * multiset      键的集合，按照键排序
 * multimap      键值对的集合，按照键排序
+
+---
+* RB-tree (非公开)
+---

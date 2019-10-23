@@ -4,7 +4,7 @@
  * @Description: 记录该fork学习过程
  * @Author: xd
  * @Date: 2019-10-12 08:24:44
- * @LastEditTime: 2019-10-21 23:05:09
+ * @LastEditTime: 2019-10-23 08:41:22
  * @LastEditors: xd
  * @Note:
  -->
@@ -93,7 +93,21 @@ github repository website:
     - Functor 可以协助 Algorithm 完成不同的策略变化
     - Adapter 可以修饰或套接 Functor、Iterator。
 
-### /container/sequence container/vector/
+## 顺序容器 /container/sequence container/
 
+参考：
 
+* [顺序容器README.md](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container)
+    - [vector](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/vector)
+    - [list](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/list)
+    - [deque](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/deque)
+    - [stack](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/stack)
+    - [queue](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/queue)
+    - [heap](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/heap)
+    - [priority_queue](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/queue)
+    - [slist](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/slist)
+
+* vector和array
+    - vector 与 array 唯一区别是空间的运用的灵活性
+    - 增加新元素，如果超过当时的容量，则容量会扩充至两倍。
 

@@ -17,7 +17,7 @@ Oracle VM VirtualBox搭建的虚拟机
 * 系统: CentOS Linux release 7.6.1810 (Core)
 * gcc 版本 4.8.5 (GCC)
 
-## 容器库
+## 容器库概述
 
 参考：
 cppreference.com:
@@ -65,6 +65,7 @@ github repository website:
 * hash_map (内含一个 hashtable) (非标准)
 * hash_multiset (内含一个 hashtable) (非标准)
 * hash_multimap (内含一个 hashtable) (非标准)
+
 ---
 
 ### 无序关联容器
@@ -110,4 +111,14 @@ github repository website:
 * vector和array
     - vector 与 array 唯一区别是空间的运用的灵活性
     - 增加新元素，如果超过当时的容量，则容量会扩充至两倍。
+
+按自己的节奏来梳理，参考已有的笔记。不完全按已有笔记顺序来，印象和理解不深。
+
+### vector
+
+目录: `SGI-STL\The Annotated STL Sources V3.3\container\sequence container\vector`
+
+#### bvector.h 文件
+
+
 

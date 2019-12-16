@@ -24,3 +24,11 @@ SGI STL 被归纳到 GNU C++ 标准程序库中，例如 gcc 使用 4.8.4 版本
 ## 参考资料
 
 * <<STL 源代码剖析>> 侯捷
+
+---
+
+*分割线*
+
+---
+
+上述是fork项目中的md，自己的学习笔记记录放在： [SGI-STL_learn_note.md](https://github.com/xiaodongQ/devNoteBackup/blob/master/%E5%90%84%E8%AF%AD%E8%A8%80%E8%AE%B0%E5%BD%95/SGI-STL_learn_note.md)

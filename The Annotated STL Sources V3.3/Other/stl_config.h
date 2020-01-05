@@ -30,7 +30,7 @@
 // Flags:  常量定义的解释
 // * __STL_NO_BOOL: defined if the compiler doesn't have bool as a builtin
 //   type.
-// * __STL_HAS_WCHAR_T: defined if the compier has wchar_t as a builtin type.
+// * __STL_HAS_WCHAR_T: defined if the compier has wchar_t as a builtin type.         // 相对《STL源码剖析》中的stl_config.h，多了该宏
 // * __STL_NO_DRAND48: defined if the compiler doesn't have the drand48 
 //   function.
 // * __STL_STATIC_TEMPLATE_MEMBER_BUG: defined if the compiler can't handle

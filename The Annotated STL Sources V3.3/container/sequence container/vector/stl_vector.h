@@ -125,6 +125,7 @@ struct _Vector_base
 template <class _Tp, class _Alloc> 
 class _Vector_base {
 public:
+  // 模板中的类型别名
   typedef _Alloc allocator_type;
   allocator_type get_allocator() const { return allocator_type(); }
   

@@ -23,7 +23,10 @@
 // Standard-conforming allocators have a very different interface.  The
 // standard default allocator is declared in the header <memory>.
 
-/* 这是原始的 HP default allocator，提供它只是为了回溯兼容。 */
+/* 这是原始的 HP default allocator，提供它只是为了回溯兼容。 
+    不要使用这个文件，SGI STL使用不同的 allocator 接口
+    该配置器只是对new和delete做了一层薄薄的封装，并没有考虑到任何效率上的强化
+*/
 
 #ifndef DEFALLOC_H
 #define DEFALLOC_H
@@ -75,6 +78,7 @@ public:
     size_type init_page_size() { 
 	return max(size_type(1), size_type(4096/sizeof(T))); 
     }
+    // 可配置成功的最大量
     size_type max_size() const { 
 	return max(size_type(1), size_type(UINT_MAX/sizeof(T))); 
     }

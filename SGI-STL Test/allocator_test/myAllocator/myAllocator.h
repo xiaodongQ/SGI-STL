@@ -6,6 +6,7 @@
 #include <cstdlib>  // exit()
 #include <climits>  // UINT_MAX
 #include <iostream> // cerr
+#include <memory>
 
 // 一个简单的空间配置器
 namespace myAllocator

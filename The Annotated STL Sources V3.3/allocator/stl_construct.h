@@ -46,17 +46,21 @@ __STL_BEGIN_NAMESPACE
 // 将初值 __value 设定到指针所指的空间上。
 template <class _T1, class _T2>
 inline void _Construct(_T1* __p, const _T2& __value) {
+  // placement new是在已有的内存上创建对象(即不新分配内存)
+  // 这里是调用类 _T1 的单参数构造函数：_T1(参数类型是_T2)，来初始化对象内容；而内存是由__p传入的已存在内存
   new ((void*) __p) _T1(__value);   // placement new，调用 _T1::_T1(__value);
 }
 
 template <class _T1>
 inline void _Construct(_T1* __p) {
+  // placement new，调用_T1类的默认构造
   new ((void*) __p) _T1();
 }
 
 // 第一个版本，接受一个指针，准备将该指针所指之物析构掉。
 template <class _Tp>
 inline void _Destroy(_Tp* __pointer) {
+  // 调用类_Tp的析构函数(传入是类_Tp的指针则使用 -> 调用)
   __pointer->~_Tp();
 }
 

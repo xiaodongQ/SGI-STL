@@ -126,6 +126,8 @@ inline void destroy(_Tp* __pointer) {
 // 第二个版本，接受 __first 和 __last 两个迭代器，将 [__first, __last)范围内的所有对象析构掉。
 template <class _ForwardIterator>
 inline void destroy(_ForwardIterator __first, _ForwardIterator __last) {
+  // 该接口中的实现：__destroy(__first, __last, __VALUE_TYPE(__first));，为了防止范围很大，而析构函数无关痛痒的情况，先用value_type()获得所指对象型别，
+  // 再用__type_traits<T>判断该型别析构是否无关痛痒
   _Destroy(__first, __last);
 }
 

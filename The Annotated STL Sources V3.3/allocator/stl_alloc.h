@@ -45,9 +45,11 @@
 #  if defined(__STL_NO_BAD_ALLOC) || !defined(__STL_USE_EXCEPTIONS)
 #    include <stdio.h>
 #    include <stdlib.h>
+     // 如果定义了不抛出异常或者没有定义使用STL异常，则用C中的fprintf打印错误到标准输出(2)，并exit退出线程
 #    define __THROW_BAD_ALLOC fprintf(stderr, "out of memory\n"); exit(1)
 #  else /* Standard conforming out-of-memory handling */
 #    include <new>
+     // 其他情况(没定义不抛出异常，且定义了使用STL异常)，则使用C++的throw跑出异常：std::bad_alloc()
 #    define __THROW_BAD_ALLOC throw std::bad_alloc()
 #  endif
 #endif
@@ -59,7 +61,7 @@
 #ifndef __RESTRICT
 #  define __RESTRICT
 #endif
-
+_STL_mutex_lock
 #ifdef __STL_THREADS
 # include <stl_threads.h>
 # define __NODE_ALLOCATOR_THREADS true
@@ -74,6 +76,9 @@
 	// The above is copied from malloc.h.  Including <malloc.h>
 	// would be cleaner but fails with certain levels of standard
 	// conformance.
+  // _S_node_allocator_lock 是本文件中定义的一个 _STL_mutex_lock 锁类型的 static 变量
+  // _STL_mutex_lock 类型定义在 stl_threads.h 中，其中根据线程模型定义了锁的类型：
+  // pthread线程模型(__STL_PTHREADS)则类中包含pthread_mutex_t和加锁解锁实现；如果是__STL_UITHREADS模型，则包含mutex_t和其加锁解锁实现(两个分支的加锁解锁函数名一样)
 #   define __NODE_ALLOCATOR_LOCK if (threads && __us_rsthread_malloc) \
                 { _S_node_allocator_lock._M_acquire_lock(); }
 #   define __NODE_ALLOCATOR_UNLOCK if (threads && __us_rsthread_malloc) \
@@ -168,10 +173,12 @@ template <int __inst>
 void (* __malloc_alloc_template<__inst>::__malloc_alloc_oom_handler)() = 0;
 #endif
 
+// 对上面定义的 class __malloc_alloc_template 中的成员函数 static void* _S_oom_malloc(size_t); 进行实现
 template <int __inst>
 void*
 __malloc_alloc_template<__inst>::_S_oom_malloc(size_t __n)
 {
+    // 定义一个函数指针
     void (* __my_malloc_handler)();
     void* __result;
 
@@ -185,6 +192,7 @@ __malloc_alloc_template<__inst>::_S_oom_malloc(size_t __n)
     }
 }
 
+// 对上面定义的 class __malloc_alloc_template 中的成员函数 static void* _S_oom_realloc(void*, size_t); 进行实现
 template <int __inst>
 void* __malloc_alloc_template<__inst>::_S_oom_realloc(void* __p, size_t __n)
 {
@@ -206,6 +214,7 @@ void* __malloc_alloc_template<__inst>::_S_oom_realloc(void* __p, size_t __n)
 typedef __malloc_alloc_template<0> malloc_alloc;
 
 // 单纯地转调用，调用传递给配置器(第一级或第二级)；多一层包装，使 _Alloc 具备标准接口
+// SGI STL 容器全都使用这个simple_alloc接口
 template<class _Tp, class _Alloc>
 class simple_alloc {
 

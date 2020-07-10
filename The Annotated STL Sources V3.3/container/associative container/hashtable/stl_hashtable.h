@@ -209,6 +209,7 @@ public:
   key_equal key_eq() const { return _M_equals; }
 
 private:
+  // 哈希表节点，每个节点都是用一个链表存储相同哈希值的节点，链表法解决哈希冲突
   typedef _Hashtable_node<_Val> _Node;
 
 // 空间配置
@@ -236,7 +237,7 @@ private:
   hasher                _M_hash;
   key_equal             _M_equals;
   _ExtractKey           _M_get_key;
-  vector<_Node*,_Alloc> _M_buckets; // vector 容器
+  vector<_Node*,_Alloc> _M_buckets; // vector 容器，即桶，每个桶对应一条链表
   size_type             _M_num_elements;
 
 public:
@@ -840,10 +841,13 @@ hashtable<_Val,_Key,_HF,_Ex,_Eq,_All>
 
 // 删除指定的节点
 template <class _Val, class _Key, class _HF, class _Ex, class _Eq, class _All>
+// 此处函数结构：返回值为xxx::size_type类型，实现类hashtable的成员函数 erase(xxx)
 typename hashtable<_Val,_Key,_HF,_Ex,_Eq,_All>::size_type 
 hashtable<_Val,_Key,_HF,_Ex,_Eq,_All>::erase(const key_type& __key)
 {
+  // 获取key对应的桶的索引
   const size_type __n = _M_bkt_num_key(__key);
+  // 该key对应的桶
   _Node* __first = _M_buckets[__n];
   size_type __erased = 0;
 
@@ -851,6 +855,7 @@ hashtable<_Val,_Key,_HF,_Ex,_Eq,_All>::erase(const key_type& __key)
     _Node* __cur = __first;
     _Node* __next = __cur->_M_next;
     while (__next) {
+      // _M_get_key 是hashtable类的一个私有成员变量
       if (_M_equals(_M_get_key(__next->_M_val), __key)) {
         __cur->_M_next = __next->_M_next;
         _M_delete_node(__next);

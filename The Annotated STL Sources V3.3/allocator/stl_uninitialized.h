@@ -46,12 +46,14 @@ __uninitialized_copy_aux(_InputIter __first, _InputIter __last,
   return copy(__first, __last, __result);
 }
 
+// 和上面的__uninitialized_copy_aux为重载关系，根据参数是 __true_type还是__false_type就可以在编译器确定调用哪个函数
 template <class _InputIter, class _ForwardIter>
 _ForwardIter 
 __uninitialized_copy_aux(_InputIter __first, _InputIter __last,
                          _ForwardIter __result,
                          __false_type)
 {
+  // 通过 placement new 将指定范围数据复制到 __result空间上
   _ForwardIter __cur = __result;
   __STL_TRY {
     for ( ; __first != __last; ++__first, ++__cur)
@@ -81,12 +83,14 @@ inline _ForwardIter
                               __VALUE_TYPE(__result));
 }
 
+// 都是字符数据则直接memmove
 inline char* uninitialized_copy(const char* __first, const char* __last,
                                 char* __result) {
   memmove(__result, __first, __last - __first);
   return __result + (__last - __first);
 }
 
+// 宽字符数据
 inline wchar_t* 
 uninitialized_copy(const wchar_t* __first, const wchar_t* __last,
                    wchar_t* __result)
@@ -96,7 +100,9 @@ uninitialized_copy(const wchar_t* __first, const wchar_t* __last,
 }
 
 // uninitialized_copy_n (not part of the C++ standard)
-
+// 从__first迭代器开始，复制__count个数据，返回值为一个pair，包含两个成员，
+// 一个是传入的__first移动__count步后的地址，一个是当前__cur(即原基础上移动__count步后的地址)
+// 用input_iterator_tag 来标识使用迭代器
 template <class _InputIter, class _Size, class _ForwardIter>
 pair<_InputIter, _ForwardIter>
 __uninitialized_copy_n(_InputIter __first, _Size __count,
@@ -149,6 +155,7 @@ __uninitialized_fill_aux(_ForwardIter __first, _ForwardIter __last,
   fill(__first, __last, __x);
 }
 
+// 两个迭代器之间的的成员都填充为__x
 template <class _ForwardIter, class _Tp>
 void
 __uninitialized_fill_aux(_ForwardIter __first, _ForwardIter __last, 

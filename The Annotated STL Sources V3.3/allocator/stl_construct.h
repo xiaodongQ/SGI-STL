@@ -88,6 +88,7 @@ __destroy(_ForwardIterator __first, _ForwardIterator __last, _Tp*)
   __destroy_aux(__first, __last, _Trivial_destructor());
 }
 
+// 第二个版本析构两个迭代器范围 [)
 // 调用 __VALUE_TYPE() 获得迭代器所指对象的类别。
 template <class _ForwardIterator>
 inline void _Destroy(_ForwardIterator __first, _ForwardIterator __last) {
@@ -108,6 +109,7 @@ inline void _Destroy(wchar_t*, wchar_t*) {}
 // Old names from the HP STL.
 
 // construct() 接受一个指针 __p 和 一个初值 __value。
+// 调用上面的 _Construct ，为了和C++标准兼容使用，定义了_Construct和_Destroy，construct和destroy是HP STL中老的函数名
 template <class _T1, class _T2>
 inline void construct(_T1* __p, const _T2& __value) {
   _Construct(__p, __value);

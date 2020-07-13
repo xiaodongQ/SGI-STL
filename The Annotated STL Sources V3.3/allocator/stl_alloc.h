@@ -49,7 +49,7 @@
 #    define __THROW_BAD_ALLOC fprintf(stderr, "out of memory\n"); exit(1)
 #  else /* Standard conforming out-of-memory handling */
 #    include <new>
-     // 其他情况(没定义不抛出异常，且定义了使用STL异常)，则使用C++的throw跑出异常：std::bad_alloc()
+     // 其他情况(没定义不抛出异常，且定义了使用STL异常)，则使用C++的throw抛出异常：std::bad_alloc()
 #    define __THROW_BAD_ALLOC throw std::bad_alloc()
 #  endif
 #endif
@@ -106,6 +106,7 @@ __STL_BEGIN_NAMESPACE
 // Typically thread-safe and more storage efficient.
 #ifdef __STL_STATIC_TEMPLATE_MEMBER_BUG
 # ifdef __DECLARE_GLOBALS_HERE
+    // 定义全局函数指针，模板类中没有定义静态成员才会进到该语句块(__STL_STATIC_TEMPLATE_MEMBER_BUG宏控制)
     void (* __malloc_alloc_oom_handler)() = 0;
     // g++ 2.7.2 does not handle static template data members.
 # else
@@ -125,6 +126,7 @@ private:
   static void* _S_oom_realloc(void*, size_t);
 
 #ifndef __STL_STATIC_TEMPLATE_MEMBER_BUG
+  // 函数指针成员 static
   static void (* __malloc_alloc_oom_handler)();
 #endif
 
@@ -185,6 +187,7 @@ __malloc_alloc_template<__inst>::_S_oom_malloc(size_t __n)
     // 不断尝试释放、配置
     for (;;) {
         __my_malloc_handler = __malloc_alloc_oom_handler;
+        // 没有定义则报错退出
         if (0 == __my_malloc_handler) { __THROW_BAD_ALLOC; }
         (*__my_malloc_handler)();  // 调用处理例程，企图释放内存
         __result = malloc(__n);   // 再次尝试配置内存
@@ -631,6 +634,7 @@ __default_alloc_template<__threads, __inst> ::_S_free_list[
 
 template <class _Tp>
 class allocator {
+  // 底层的分配器，用的是 alloc，也可以在类模板中指定(下面的struct __allocator{xxx}定义中就是如此)
   typedef alloc _Alloc;          // The underlying allocator.
 public:
   typedef size_t     size_type;
@@ -641,33 +645,50 @@ public:
   typedef const _Tp& const_reference;
   typedef _Tp        value_type;
 
+  // 以下是按STL规范，allocator要求实现的必要接口
+  // 一个嵌套的 class template，class rebind<U>拥有唯一成员other，那是一个typedef，代表allocator<U>
   template <class _Tp1> struct rebind {
     typedef allocator<_Tp1> other;
   };
 
+  // 默认构造
   allocator() __STL_NOTHROW {}
+  // 拷贝构造
   allocator(const allocator&) __STL_NOTHROW {}
+  // 泛化的拷贝构造
   template <class _Tp1> allocator(const allocator<_Tp1>&) __STL_NOTHROW {}
+  // 默认析构
   ~allocator() __STL_NOTHROW {}
 
+  // 返回某个对象的地址，同 &x
   pointer address(reference __x) const { return &__x; }
+  // 返回某个const对象的地址，同 &x
   const_pointer address(const_reference __x) const { return &__x; }
 
   // __n is permitted to be 0.  The C++ standard says nothing about what
   // the return value is when __n == 0.
+  // 配置空间，足以存储 __n 个 _Tp 类型的对象，__n为0时C++标准并没有对返回值做说明，此处返回0
   _Tp* allocate(size_type __n, const void* = 0) {
+    // _Alloc是一个typedef，_Alloc::allocate 即 alloc::allocate
     return __n != 0 ? static_cast<_Tp*>(_Alloc::allocate(__n * sizeof(_Tp))) 
                     : 0;
   }
 
   // __p is not permitted to be a null pointer.
+  // 归还先前配置的空间，调用 alloc::deallocate
   void deallocate(pointer __p, size_type __n)
     { _Alloc::deallocate(__p, __n * sizeof(_Tp)); }
 
+  // 返回可成功配置的最大量
   size_type max_size() const __STL_NOTHROW 
     { return size_t(-1) / sizeof(_Tp); }
 
+  // 等同于 new((const void*) __p) _TP(__val)，通过一个 const引用对象 来新建一个对象，该对象内容和传入引用对象的内容相同
+  // 此处用的是 placement new，(注意和new有区别，new会调用到operator new来分配内存，placement new重载了 operator new)
+  // 指向一个 _Tp 对象(通过拷贝构造函数创建)，对象在 __p 中分配
   void construct(pointer __p, const _Tp& __val) { new(__p) _Tp(__val); }
+
+  // 析构释放对象，显式调用对象的析构函数来解除构造函数的影响
   void destroy(pointer __p) { __p->~_Tp(); }
 };
 

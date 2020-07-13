@@ -42,7 +42,7 @@
 template <class T>
 inline T* allocate(ptrdiff_t size, T*) {
     set_new_handler(0);   // 为了卸载目前的内存分配异常处理函数，强制C++在内存不够的时候抛出std:bad_alloc。
-    // 申请size个T类型大小的空间
+    // 申请size个T类型大小的空间 operator new 操作符
     T* tmp = (T*)(::operator new((size_t)(size * sizeof(T))));
     if (tmp == 0) {
 	cerr << "out of memory" << endl; 
@@ -57,6 +57,7 @@ inline void deallocate(T* buffer) {
     ::operator delete(buffer);
 }
 
+// SGI定义的符合部分STL标准的allocator，但SGI从未使用也不建议使用该空间配置器
 template <class T>
 class allocator {
 public:

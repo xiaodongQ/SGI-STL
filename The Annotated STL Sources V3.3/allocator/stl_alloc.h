@@ -214,6 +214,7 @@ void* __malloc_alloc_template<__inst>::_S_oom_realloc(void* __p, size_t __n)
 }
 
 // 直接将参数 __inst 指定为0
+// 便于其他地方直接用 malloc_alloc 来使用第一级配置器
 typedef __malloc_alloc_template<0> malloc_alloc;
 
 // 单纯地转调用，调用传递给配置器(第一级或第二级)；多一层包装，使 _Alloc 具备标准接口
@@ -331,6 +332,7 @@ private:
     enum {_NFREELISTS = 16}; // _MAX_BYTES/_ALIGN  free-list 的个数
 # endif 
   // 将任何小额区块的内存需求量上调至 8 的倍数
+  // +7后，和取反后的数 按位与 (0111取反1000，再按位与，就把第3位之后的舍弃了，666...)
   static size_t
   _S_round_up(size_t __bytes) 
     { return (((__bytes) + (size_t) _ALIGN-1) & ~((size_t) _ALIGN - 1)); }
@@ -346,9 +348,11 @@ private:
     static _Obj* __STL_VOLATILE _S_free_list[]; 
         // Specifying a size results in duplicate def for 4.1
 # else
+    // 16个空闲列表各自管理大小分别为：8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128 bytes的小额区块
     static _Obj* __STL_VOLATILE _S_free_list[_NFREELISTS];  // 维护 16 个空闲链表(free list)，初始化为0，即每个链表中都没有空闲数据块  
 # endif 
-  //根据申请数据块大小找到相应空闲链表的下标，n 从 0 起算
+  //根据申请数据块大小找到相应空闲链表(_S_free_list)的下标，n 从 0 起算
+  // e.g. 申请1字节，(1+7)/8 - 1 = 0，注意-1并没有在除数里面
   static  size_t _S_freelist_index(size_t __bytes) {
         return (((__bytes) + (size_t)_ALIGN-1)/(size_t)_ALIGN - 1);
   }
@@ -392,18 +396,19 @@ public:
       __ret = malloc_alloc::allocate(__n);
     }
     else {
-      // 根据申请空间的大小寻找相应的空闲链表（16个空闲链表中的一个）
+      // 根据申请空间的大小寻找相应的空闲链表（16个空闲链表中的一个）free list
       _Obj* __STL_VOLATILE* __my_free_list
           = _S_free_list + _S_freelist_index(__n);
       // Acquire the lock here with a constructor call.
       // This ensures that it is released in exit or during stack
       // unwinding.
 #     ifndef _NOTHREADS
-      /*REFERENCED*/
+      /*REFERENCED*/ //同RAII的功能，生命周期内获取了锁
       _Lock __lock_instance;
 #     endif
       _Obj* __RESTRICT __result = *__my_free_list;
       // 空闲链表没有可用数据块，就将区块大小先调整至 8 倍数边界，然后调用 _S_refill() 重新填充
+      // 直接判断==0，用的是联合体里面的另一个成员？还是意思是空指针？
       if (__result == 0)
         __ret = _S_refill(_S_round_up(__n));
       else {
@@ -543,6 +548,7 @@ __default_alloc_template<__threads, __inst>::_S_refill(size_t __n)
 {
     int __nobjs = 20;
     // 调用 _S_chunk_alloc()，缺省取 20 个区块作为 free list 的新节点
+    // 从内存池里面获取空间，若内存池空间不足，可能少于20个
     char* __chunk = _S_chunk_alloc(__n, __nobjs);
     _Obj* __STL_VOLATILE* __my_free_list;
     _Obj* __result;

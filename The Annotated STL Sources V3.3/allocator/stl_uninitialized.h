@@ -222,6 +222,8 @@ template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter 
 uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x)
 {
+  // __VALUE_TYPE 萃取第一个迭代器的value type，判断是否为POD型别
+  // POD: Plain Old Data，标量型别或者传统的C struct型别
   return __uninitialized_fill_n(__first, __n, __x, __VALUE_TYPE(__first));
 }
 

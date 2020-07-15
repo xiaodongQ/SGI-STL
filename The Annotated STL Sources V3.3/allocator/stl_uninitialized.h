@@ -64,12 +64,14 @@ __uninitialized_copy_aux(_InputIter __first, _InputIter __last,
 }
 
 
+// uninitialized_copy的泛化
 template <class _InputIter, class _ForwardIter, class _Tp>
 inline _ForwardIter
 __uninitialized_copy(_InputIter __first, _InputIter __last,
                      _ForwardIter __result, _Tp*)
 {
   typedef typename __type_traits<_Tp>::is_POD_type _Is_POD;
+  // __uninitialized_copy_aux 包含两个特化版本，根据_Is_POD判断调用哪个
   return __uninitialized_copy_aux(__first, __last, __result, _Is_POD());
 }
 

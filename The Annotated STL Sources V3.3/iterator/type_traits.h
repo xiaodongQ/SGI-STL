@@ -244,6 +244,7 @@ struct __type_traits<_Tp*> {
 
 #else /* __STL_CLASS_PARTIAL_SPECIALIZATION */
 
+// 注意指针类型都定义为__true_type了，当做平凡类型，则只会做浅拷贝
 __STL_TEMPLATE_NULL struct __type_traits<char*> {
    typedef __true_type    has_trivial_default_constructor;
    typedef __true_type    has_trivial_copy_constructor;
@@ -310,6 +311,7 @@ __STL_TEMPLATE_NULL struct _Is_integer<bool> {
 
 #endif /* __STL_NO_BOOL */
 
+// 各个类型的特化版本，是否为数值类型，类型特性萃取的时候就可以通过返回的类__true_type和__false_type区分了，便于调用不同重载
 __STL_TEMPLATE_NULL struct _Is_integer<char> {
   typedef __true_type _Integral;
 };

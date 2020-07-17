@@ -124,6 +124,7 @@ template <class _Tp>
 struct iterator_traits<_Tp*> {
   typedef random_access_iterator_tag iterator_category;
   typedef _Tp                         value_type;
+  // ptrdiff_t是两个指针相减的结果，跳转定义，Mingw里的定义是：long int
   typedef ptrdiff_t                   difference_type;  // C++ 内建的 ptrdiff_t 类型
   typedef _Tp*                        pointer;
   typedef _Tp&                        reference;
@@ -146,7 +147,7 @@ struct iterator_traits<const _Tp*> {
 
 // We introduce internal names for these functions.
 
-// 决定某个迭代器的类型-category 类别
+// 决定某个迭代器的类型-category 类别  迭代器相应类型(associated type)：iterator category
 template <class _Iter>
 inline typename iterator_traits<_Iter>::iterator_category
 __iterator_category(const _Iter&)
@@ -155,7 +156,7 @@ __iterator_category(const _Iter&)
   return _Category();
 }
 
-// 决定某个迭代器的类型-difference type
+// 决定某个迭代器的类型-difference type  相应类型：difference type
 template <class _Iter>
 inline typename iterator_traits<_Iter>::difference_type*
 __distance_type(const _Iter&)
@@ -163,11 +164,12 @@ __distance_type(const _Iter&)
   return static_cast<typename iterator_traits<_Iter>::difference_type*>(0);
 }
 
-// 决定某个迭代器的类型-value_type
+// 决定某个迭代器的类型-value_type  相应类型：value type
 template <class _Iter>
 inline typename iterator_traits<_Iter>::value_type*
 __value_type(const _Iter&)
 {
+  // static_cast<T>(a)强制类型转换，类似于C中的 (T)a
   return static_cast<typename iterator_traits<_Iter>::value_type*>(0);
 }
 
@@ -192,6 +194,7 @@ value_type(const _Iter& __i) { return __value_type(__i); }
 
 #else /* __STL_CLASS_PARTIAL_SPECIALIZATION */
 
+// 下面同名函数形成重载
 template <class _Tp, class _Distance> 
 inline input_iterator_tag 
 iterator_category(const input_iterator<_Tp, _Distance>&)
@@ -293,15 +296,18 @@ inline void __distance(_RandomAccessIterator __first,
                        _RandomAccessIterator __last, 
                        _Distance& __n, random_access_iterator_tag)
 {
+  // __STL_REQUIRES 里面并没有定义什么操作，空的do...while(0)
   __STL_REQUIRES(_RandomAccessIterator, _RandomAccessIterator);
   __n += __last - __first;
 }
 
+// 下面也有一个distance()的重载实现版本，距离直接返回(此处通过引用赋值)：distance(_InputIterator __first, _InputIterator __last)
 template <class _InputIterator, class _Distance>
 inline void distance(_InputIterator __first, 
                      _InputIterator __last, _Distance& __n)
 {
   __STL_REQUIRES(_InputIterator, _InputIterator);
+  // 根据迭代器类型区分调用哪个重载版本
   __distance(__first, __last, __n, iterator_category(__first));
 }
 
@@ -338,7 +344,7 @@ distance(_InputIterator __first, _InputIterator __last) {
 
 #endif /* __STL_CLASS_PARTIAL_SPECIALIZATION */
 
-// advance() 内部实现
+// advance() 内部实现 向后移动几部
 template <class _InputIter, class _Distance>
 inline void __advance(_InputIter& __i, _Distance __n, input_iterator_tag) {
   while (__n--) ++__i;  // 单向，加上标记 input_iterator_tag 
@@ -359,6 +365,7 @@ inline void __advance(_BidirectionalIterator& __i, _Distance __n,
 }
 
 #if defined(__sgi) && !defined(__GNUC__) && (_MIPS_SIM != _MIPS_SIM_ABI32)
+// 重置名为1183的编译器警告
 #pragma reset woff 1183
 #endif
 
@@ -369,6 +376,7 @@ inline void __advance(_RandomAccessIterator& __i, _Distance __n,
   __i += __n;  // 双向，跳跃前进，加上标记 random_access_iterator_tag
 }
 
+// 包装一层用于给外部使用
 template <class _InputIterator, class _Distance>
 inline void advance(_InputIterator& __i, _Distance __n) {
   __STL_REQUIRES(_InputIterator, _InputIterator);

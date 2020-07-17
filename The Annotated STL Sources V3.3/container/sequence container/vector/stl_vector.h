@@ -166,6 +166,7 @@ class vector : protected _Vector_base<_Tp, _Alloc>
 {
   // requirements:
 
+  // __STL_CLASS_REQUIRES 宏展开是定义一个 static int变量，变量名通过传入信息拼接，形式： __类型_值
   __STL_CLASS_REQUIRES(_Tp, _Assignable);
 
 private:

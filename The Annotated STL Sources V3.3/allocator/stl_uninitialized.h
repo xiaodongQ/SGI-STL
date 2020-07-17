@@ -70,8 +70,9 @@ inline _ForwardIter
 __uninitialized_copy(_InputIter __first, _InputIter __last,
                      _ForwardIter __result, _Tp*)
 {
+  // 萃取类型的特性，根据萃取返回的__true_type类还是__false_type类区分
   typedef typename __type_traits<_Tp>::is_POD_type _Is_POD;
-  // __uninitialized_copy_aux 包含两个特化版本，根据_Is_POD判断调用哪个
+  // __uninitialized_copy_aux 有两个重载版本，此处会构造一个_Is_POD类类型的临时变量，传入变量的类型判断调用哪个重载函数
   return __uninitialized_copy_aux(__first, __last, __result, _Is_POD());
 }
 

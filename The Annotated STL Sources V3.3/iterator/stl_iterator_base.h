@@ -109,7 +109,7 @@ struct iterator {
 
 #ifdef __STL_CLASS_PARTIAL_SPECIALIZATION
 
-// traits 获取各个迭代器的特性(相应类型)-----类型特性类
+// traits 获取各个迭代器的特性(相应类型/型别)-----类型特性类
 template <class _Iterator>
 struct iterator_traits {
   typedef typename _Iterator::iterator_category iterator_category; // 迭代器类别

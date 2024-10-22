@@ -54,6 +54,7 @@ vector<Shape>::iterator svite; // svite 的类型就是 Shape*
 ## [deque](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/deque)
 
 * deque 是一种双向开口的连续线性空间。可以在头尾两端分别做元素的插入和删除操作。
+    - 发音：deck，（戴克）
 * deque 和 vector 的差异：第一，deque 允许于常数时间内对起头端进行元素的插入或移除操作；第二，deque 没有容量，它是动态地以分段连续空间组合而成。
 * deque 由一段段的定量连续空间构成。一旦有必要在 deque 的前端或尾端增加新空间，便配置一段定量连续空间，串接在整个 deque 的头端或尾端。
 * deque 实现复杂，其复杂的迭代器架构。
@@ -94,6 +95,7 @@ STL stack 往往不被归类为 container(容器)，而被归类为 container ad
 ## [queue](https://github.com/steveLauwh/SGI-STL/tree/master/The%20Annotated%20STL%20Sources%20V3.3/container/sequence%20container/queue)
 
 queue 是一种先进先出的数据结构。从最底端加入元素，从最顶端取出元素。
+    - [kju]
 
 SGI STL 默认是以 deque 作为缺省情况下的 queue 底部结构。
 
